@@ -50,16 +50,13 @@ module.exports = function(options) {
 
 
   function cmd_list( args, done ) {
-    var keyPath = buildKeyPath(args.key);
-    var removeKeySegments = _.partialRight(_.difference, keyPath.split("/"));
+    var keyPath = buildKeyPath(args.key);    
     consul.kv.keys({key: keyPath}, function(err, result) {
       if ( !err || err.message === 'not found') {
           result = _.chain(result || []);
             var childFilter = args.recurse ? allChildren: immediateChildrenOnly;
-            var keys = result.invoke("split","/")
-                                .map(removeKeySegments)
-                                  .filter(childFilter)
-                                    .invoke("join","/").value();
+            var keys = result.invoke("substring",keyPath.length)                                
+                                     .filter(childFilter).value();
             done(null,{keys: keys});
       }
       else {
@@ -90,6 +87,6 @@ function endsWithSlash( searchKey ){
 
 var allChildren = _.constant(true);
 
-var immediateChildrenOnly = function( array ){
-    return array.length < 2;
+var immediateChildrenOnly = function( keyName ){
+    return keyName.indexOf("/") === -1
 };
