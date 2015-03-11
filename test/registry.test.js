@@ -112,10 +112,11 @@ describe('plugin', function(){
       .wait('role:registry,cmd:set,key:k1/m1,value:v2')
       .wait('role:registry,cmd:set,key:k1/m2,value:v3')
       .wait('role:registry,cmd:set,key:k1/m3/z,value:z3')
+      .wait('role:registry,cmd:set,key:k1/k1,value:k1')
 
       .wait('role:registry,cmd:list,key:k1')
       .step(function(data){
-        assert.deepEqual(data.keys,["m1","m2"])
+        assert.deepEqual(data.keys.sort(),["m1","m2","k1"].sort())
         return true;
       })
 
