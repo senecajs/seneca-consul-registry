@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>registry.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>registry.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/* Copyright (c) 2015 Jakub Milkiewicz, MIT License */</span>
+<span class="hljs-comment">/* jshint node:true, asi:true, eqnull:true, loopfunc:true */</span>
+<span class="hljs-pi">"use strict"</span>;
+
+
+<span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash'</span>)
+<span class="hljs-keyword">var</span> consulReq = <span class="hljs-built_in">require</span>(<span class="hljs-string">'consul'</span>)
+<span class="hljs-keyword">var</span> valueProperty = _.property(<span class="hljs-string">'Value'</span>)
+
+<span class="hljs-keyword">var</span> consul;
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{
+  <span class="hljs-keyword">var</span> seneca = <span class="hljs-keyword">this</span>
+
+  options = seneca.util.deepextend({
+  },options)
+
+
+  seneca.add(<span class="hljs-string">'role:registry,cmd:set'</span>,    cmd_set)
+  seneca.add(<span class="hljs-string">'role:registry,cmd:get'</span>,    cmd_get)
+  seneca.add(<span class="hljs-string">'role:registry,cmd:remove'</span>, cmd_remove)
+  seneca.add(<span class="hljs-string">'role:registry,cmd:list'</span>,   cmd_list)
+
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">cmd_set</span><span class="hljs-params">( args, done )</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>TODO shall we check size of of value</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    consul.kv.set(args.key, args.value, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> </span>{
+      done(err,{});
+    });
+  }
+
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">cmd_get</span><span class="hljs-params">( args, done )</span> </span>{
+   consul.kv.get({key:args.key,recurse:<span class="hljs-literal">false</span>}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> </span>{
+      <span class="hljs-keyword">if</span>( err ) {
+        done(err);
+      }
+      <span class="hljs-keyword">else</span> {
+        done(<span class="hljs-literal">null</span>,{value:valueProperty(result || {})});
+      }
+    });
+  }
+
+  
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">cmd_remove</span><span class="hljs-params">( args, done )</span> </span>{
+    consul.kv.del({key:args.key,recurse:args.recurse || <span class="hljs-literal">false</span>}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{
+      done(err,{});
+    });
+  }
+
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">cmd_list</span><span class="hljs-params">( args, done )</span> </span>{
+    <span class="hljs-keyword">var</span> keyPath = buildKeyPath(args.key);
+    <span class="hljs-keyword">var</span> removeKeySegments = _.partialRight(_.difference, keyPath.split(<span class="hljs-string">"/"</span>));
+    consul.kv.keys({key: keyPath}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> </span>{
+      <span class="hljs-keyword">if</span> ( !err || err.message === <span class="hljs-string">'not found'</span>) {
+          result = _.chain(result || []);
+            <span class="hljs-keyword">var</span> childFilter = args.recurse ? allChildren: immediateChildrenOnly;
+            <span class="hljs-keyword">var</span> keys = result.invoke(<span class="hljs-string">"split"</span>,<span class="hljs-string">"/"</span>)
+                                .map(removeKeySegments)
+                                  .filter(childFilter)
+                                    .invoke(<span class="hljs-string">"join"</span>,<span class="hljs-string">"/"</span>).value();
+            done(<span class="hljs-literal">null</span>,{keys: keys});
+      }
+      <span class="hljs-keyword">else</span> {
+        done(err,<span class="hljs-literal">null</span>);
+      }
+    })
+  }
+  
+
+  seneca.add(<span class="hljs-string">'init:registry-consul'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(args,done)</span></span>{
+    consul = consulReq(options);
+    done();
+  });
+
+  <span class="hljs-keyword">return</span> {
+    name:<span class="hljs-string">"registry-consul"</span>
+  };
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildKeyPath</span><span class="hljs-params">( searchKey )</span></span>{
+  <span class="hljs-keyword">return</span> endsWithSlash(searchKey)? searchKey : searchKey+<span class="hljs-string">"/"</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">endsWithSlash</span><span class="hljs-params">( searchKey )</span></span>{
+  <span class="hljs-keyword">return</span> searchKey.indexOf(<span class="hljs-string">"/"</span>, searchKey.length - <span class="hljs-number">1</span>) === searchKey.length -<span class="hljs-number">1</span>;
+}
+
+
+<span class="hljs-keyword">var</span> allChildren = _.constant(<span class="hljs-literal">true</span>);
+
+<span class="hljs-keyword">var</span> immediateChildrenOnly = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( array )</span></span>{
+    <span class="hljs-keyword">return</span> array.length &lt; <span class="hljs-number">2</span>;
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
