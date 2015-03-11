@@ -95,16 +95,13 @@
 
 
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">cmd_list</span><span class="hljs-params">( args, done )</span> </span>{
-    <span class="hljs-keyword">var</span> keyPath = buildKeyPath(args.key);
-    <span class="hljs-keyword">var</span> removeKeySegments = _.partialRight(_.difference, keyPath.split(<span class="hljs-string">"/"</span>));
+    <span class="hljs-keyword">var</span> keyPath = buildKeyPath(args.key);    
     consul.kv.keys({key: keyPath}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> </span>{
       <span class="hljs-keyword">if</span> ( !err || err.message === <span class="hljs-string">'not found'</span>) {
           result = _.chain(result || []);
             <span class="hljs-keyword">var</span> childFilter = args.recurse ? allChildren: immediateChildrenOnly;
-            <span class="hljs-keyword">var</span> keys = result.invoke(<span class="hljs-string">"split"</span>,<span class="hljs-string">"/"</span>)
-                                .map(removeKeySegments)
-                                  .filter(childFilter)
-                                    .invoke(<span class="hljs-string">"join"</span>,<span class="hljs-string">"/"</span>).value();
+            <span class="hljs-keyword">var</span> keys = result.invoke(<span class="hljs-string">"substring"</span>,keyPath.length)                                
+                                     .filter(childFilter).value();
             done(<span class="hljs-literal">null</span>,{keys: keys});
       }
       <span class="hljs-keyword">else</span> {
@@ -135,8 +132,8 @@
 
 <span class="hljs-keyword">var</span> allChildren = _.constant(<span class="hljs-literal">true</span>);
 
-<span class="hljs-keyword">var</span> immediateChildrenOnly = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( array )</span></span>{
-    <span class="hljs-keyword">return</span> array.length &lt; <span class="hljs-number">2</span>;
+<span class="hljs-keyword">var</span> immediateChildrenOnly = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( keyName )</span></span>{
+    <span class="hljs-keyword">return</span> keyName.indexOf(<span class="hljs-string">"/"</span>) === -<span class="hljs-number">1</span>
 };</pre></div></div>
             
         </li>
