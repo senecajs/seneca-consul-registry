@@ -2,7 +2,7 @@
   "name": "seneca-registry-consul",
   "version": "0.1.0",
   "description": "Seneca key value registry for Consul.",
-  "main": "registry.js",
+  "main": "consul-registry.js",
   "scripts": {
     "test": "./test.sh",
     "build": "./build.sh"
@@ -27,8 +27,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "consul": "^0.13.0",
-    "lodash": "~2.4.1"
+    "consul": "0.25.0",
+    "lodash": "4.5.0"
   },
   "devDependencies": {
     "docco": "~0.6.3",

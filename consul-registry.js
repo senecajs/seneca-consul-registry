@@ -53,11 +53,15 @@ module.exports = function(options) {
     var keyPath = buildKeyPath(args.key);    
     consul.kv.keys({key: keyPath}, function(err, result) {
       if ( !err || err.message === 'not found') {
-          result = _.chain(result || []);
-            var childFilter = args.recurse ? allChildren: immediateChildrenOnly;
-            var keys = result.invoke("substring",keyPath.length)                                
-                                     .filter(childFilter).value();
-            done(null,{keys: keys});
+        result = result || []
+        var childFilter = args.recurse ? allChildren: immediateChildrenOnly;
+
+        var keys = result.map(function (key) {
+          return key.substring(keyPath.length)
+        })
+        keys = keys.filter(childFilter);
+
+        done(null,{keys: keys});
       }
       else {
         done(err,null);
