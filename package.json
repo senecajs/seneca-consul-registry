@@ -1,5 +1,5 @@
 {
-  "name": "seneca-registry-consul",
+  "name": "seneca-consul-consul",
   "version": "0.1.0",
   "description": "Seneca key value registry for Consul.",
   "main": "consul-registry.js",
