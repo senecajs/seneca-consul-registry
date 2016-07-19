@@ -7,14 +7,14 @@ var _ = require('lodash')
 var consulReq = require('consul')
 var valueProperty = _.property('Value')
 
-var consul;
 
-module.exports = function(options) {
+module.exports = function consul_registry (options) {
   var seneca = this
 
   options = seneca.util.deepextend({
   },options)
 
+  var consul;
 
   seneca.add('role:registry,cmd:set',    cmd_set)
   seneca.add('role:registry,cmd:get',    cmd_get)
@@ -70,13 +70,13 @@ module.exports = function(options) {
   }
   
 
-  seneca.add('init:registry-consul',function(args,done){
+  seneca.add('init:consul_registry',function(args,done){
     consul = consulReq(options);
     done();
   });
 
   return {
-    name:"registry-consul"
+    name: "consul_registry"
   };
 };
 
