@@ -6,9 +6,10 @@
   "scripts": {
     "test": "mocha test/*.test.js"
   },
+  "homepage": "https://github.com/senecajs/seneca-consul-registry#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jmilkiewicz/seneca-registry-consul"
+    "url": "git+https://github.com/senecajs/seneca-consul-registry.git"
   },
   "keywords": [
     "seneca",
