@@ -1,21 +1,16 @@
-# seneca-consul-registry
-## Seneca key-value registry for Consul
+![Seneca](http://senecajs.org/files/assets/seneca-logo.png)
+> A [Seneca.js][] plugin
 
+# @seneca/consul-registry
 
-This plugin module provides a simple access to key/vaue store of [Consul](https://www.consul.io/).
-This module is a Seneca plugin. For a gentle introduction to Seneca
-itself, see the [senecajs.org](http://senecajs.org) site.
+| ![Voxgig](https://www.voxgig.com/res/img/vgt01r.png) | This open source module is sponsored and supported by [Voxgig](https://www.voxgig.com). |
+|---|---|
 
+## Install
 
-## Support
-
-Current Version: 0.1.0
-
-Tested on: Node 0.10.36, Seneca 0.6.1
-
-[Annotated Source Code](http://jmilkiewicz.github.io/seneca-consul-registry/doc/registry.html).
-
-
+```sh
+npm install seneca-consul-registry
+```
 
 ## Quick Example
 
@@ -34,67 +29,24 @@ require('seneca')()
   .end()
 ```
 
+## More Examples
 
-## Usage
+See [test/](test/) for usage examples.
 
-Keys are strings of the form: _a/b/c_ where each _/_ defines a branch
-of a tree. In simple cases, you can treat keys as simple identifiers
-and ignore this tree structure. In more complex cases you can use the
-tree structure as a namespace mechanism. In particular, you can remove
-and list keys recursively.
+## Motivation
 
+A key-value registry for Seneca microservices using [Consul](https://www.consul.io/) as the backend.
 
-```js
-require('seneca')()
-  .use('registry-consul')
-  .start()
+## Support
 
-  .wait('role:registry,cmd:set,key:x,value:1')
-  .wait('role:registry,cmd:set,key:x/u,value:2')
-  .wait('role:registry,cmd:set,key:x/v,value:3')
-  .wait('role:registry,cmd:set,key:x/v/y,value:4')
+If you're using this module and need help, you can:
 
-  .wait('role:registry,cmd:list,key:x')
-  .step(function(data){
-    console.log( data.keys ) // == [ 'u', 'v' ]
-    return true;
-  })
+- Post a [github issue][]
+- Tweet to [@senecajs][]
 
-  .wait('role:registry,cmd:list,key:x,recurse:true')
-  .step(function(data){
-    console.log( data.keys ) // == [ 'u', 'v', 'v/y' ]
-    return true;
-  })
+## API
 
-  .end()
-```
-
-## Consul 
-
-### Running Consul
-
-The easiest way to run consul is by running it as docker container. 
-
-	$ docker run -p 8400:8400 -p 8500:8500 -p 8600:53/udp -h node1 progrium/consul -server -bootstrap
-	
-Please take a look at [docker-consul](https://github.com/progrium/docker-consul) for details. 
- 
-
-### Consul Configuration parameters
-You can specify connection parameters to Consul by passing them as options object when registering the plugin
-
-```js
-require('seneca')()
-  .use('registry-consul',{host:"localhost", port:"5800"})
-  .start()
-  .end()
-```
-
-
-The exact parameters ( and their types) are the same as defined by [node-consul]  (https://github.com/silas/node-consul#init) init parameters
-
-## Action Patterns
-
+### Action Patterns
 
 #### `role:registry, cmd:set`
 
@@ -146,11 +98,18 @@ Parameters:
 
 Response: none
 
+## Contributing
 
+The [Senecajs org][] encourages open participation. If you feel you can help in any way, be it with documentation, examples, extra testing, or new features please get in touch.
 
+### Running tests
 
+```sh
+npm run test
+```
 
+## Background
 
+Uses [Consul](https://www.consul.io/) for distributed key-value storage.
 
-
-
+[Annotated Source Code](http://jmilkiewicz.github.io/seneca-consul-registry/doc/registry.html).
