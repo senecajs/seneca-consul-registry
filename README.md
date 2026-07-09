@@ -1,11 +1,12 @@
 # seneca-consul-registry
 ## Seneca key-value registry for Consul
 
-
 This plugin module provides a simple access to key/vaue store of [Consul](https://www.consul.io/).
 This module is a Seneca plugin. For a gentle introduction to Seneca
 itself, see the [senecajs.org](http://senecajs.org) site.
 
+| ![Voxgig](https://www.voxgig.com/res/img/vgt01r.png) | This open source module is sponsored and supported by [Voxgig](https://www.voxgig.com). |
+|---|---|
 
 ## Support
 
