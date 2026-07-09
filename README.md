@@ -1,10 +1,20 @@
 ![Seneca](http://senecajs.org/files/assets/seneca-logo.png)
 > A [Seneca.js][] plugin
 
-# @seneca/consul-registry
+This plugin module provides a simple access to key/vaue store of [Consul](https://www.consul.io/).
+This module is a Seneca plugin. For a gentle introduction to Seneca
+itself, see the [senecajs.org](http://senecajs.org) site.
 
 | ![Voxgig](https://www.voxgig.com/res/img/vgt01r.png) | This open source module is sponsored and supported by [Voxgig](https://www.voxgig.com). |
 |---|---|
+
+## Support
+
+Current Version: 0.1.0
+
+Tested on: Node 0.10.36, Seneca 0.6.1
+
+[Annotated Source Code](http://jmilkiewicz.github.io/seneca-consul-registry/doc/registry.html).
 
 ## Install
 
